@@ -1,16 +1,5 @@
 /* Wire Master Send & Receive
-//
-
 // MAE1010 2017
-
-it is re-wrote from the lab workshop
-I2Cmaster_snd_rec
-
-it is a demo by usig a Joystick 
-
-X+ (0x01), X- (0x02)
-Y+ (0x03), Y- (0x04)
-
 
 */
 
@@ -20,25 +9,28 @@ Y+ (0x03), Y- (0x04)
 #define SLV_id 8    // must define target slave address
 
 int sndLED=13;    // define an LED tells command sent
-char buf[40];     // for printing 
 
 void setup()
 {
   Wire.begin(); // join i2c bus (address optional for master, NO need)
   Serial.begin(9600);           // start serial for output
-}
 
 
-void loop()
-{
+  //codes below only need to be executed once.
   route1();
   route2();
   playMusic();
   Master_I2Csend(SLV_id, 0x01);
-  if(Master_I2Creceive()==0x01){
-     route3();
-     Master_I2Csend(SLV_id, 0x02);
-  } 
+  do{
+    //leave blank to hold the master until the slave is done.
+  }while(Master_I2Creceive()!=0x01);
+  route3();
+  Master_I2Csend(SLV_id, 0x02);
+}
+
+void loop()
+{
+  
 }
 
 void route1(){
@@ -77,9 +69,10 @@ byte Master_I2Creceive()
   {
     char c = Wire.read(); // receive a byte as character
     Serial.print(c);         // print the character
+    delay(500);
     return Wire.read();
   }
-  delay(500);
+  
 }
 
 
